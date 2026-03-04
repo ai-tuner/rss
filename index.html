@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en"> <head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <title>RSS Reader</title>
+   <meta name="description" content="The Reader is a space where the recent happenings are shared."/>
+
+   <link rel="manifest" href="manifest.json">
+   <style>
+      /* 1. FLUID DESIGN TOKENS */
+      :root {
+         --brand-color: #402189;
+         --bg-card: #f6f5fa;
+         /* Fluid font: min 1rem, max 1.25rem based on viewport */
+         --fs-body: clamp(1rem, 0.95rem + 0.25vw, 1.25rem);
+         --fs-title: clamp(1.2rem, 1.1rem + 0.5vw, 1.8rem);
+      }
+
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+
+      body {
+         font-family: 'Segoe UI', system-ui, sans-serif;
+         color: #402189;
+         background-color: #fff;
+         line-height: 1.6;
+      }
+
+      /* 2. MODERN CONTAINER SETUP */
+      #rss-reader {
+         max-width: 960px;
+         margin: 0 auto;
+         padding: clamp(5px, 3vw, 10px);
+         display: flex;
+         flex-direction: column;
+         gap: 10px;
+         /* Container Query entry point */
+         container-type: inline-size;
+         container-name: reader;
+      }
+
+      /* 3. THE SMART CARD */
+      .rss-card {
+         display: grid;
+         grid-template-columns: 1fr; /* Mobile first */
+         gap: 10px;
+         padding: 8px;
+         background-color: var(--bg-card);
+         border: 1px solid transparent;
+         border-radius: 16px;
+         transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+         text-decoration: none;
+         color: inherit;
+      }
+
+      .rss-card:hover {
+         box-shadow: 0 10px 30px rgba(64, 33, 137, 0.1);
+         border-color: var(--brand-color);
+         transform: scale(1.01);
+         color: var(--brand-color);
+      }
+
+      .rss-image img {
+         width: 100%;
+         aspect-ratio: initial; /* Maintains shape without squishing */
+         object-fit: cover;
+         border-radius: 12px;
+         display: block;
+      }
+
+      .rss-content h2 {
+         font-size: var(--fs-title);
+         margin-bottom: 12px;
+         line-height: 1.2;
+         text-align: center;
+         
+      }
+
+      .rss-content p {
+         font-size: var(--fs-body);
+         text-align: justify;
+         hyphens: auto;
+         color:#231649;
+      }
+
+      .rss-content p:hover {
+         color: var(--brand-color);
+      }
+
+      /* 4. ADVANCED CONTAINER QUERIES (The "Advanced" part) */
+      /* This checks the width of the #rss-reader, not the whole screen! */
+      
+      @container reader (min-width: 480px) and (max-width: 600px) {
+         .rss-card {
+            grid-template-columns: 1fr;
+            align-items: center;
+         }
+         
+         .rss-image img {
+            aspect-ratio: 1.25 / 1; /* Slightly taller image for small tablets */
+           align-items: center;
+
+         }
+      }
+
+      @container reader (min-width: 601px) and (max-width: 768px) {
+         .rss-card {
+            grid-template-columns: 33% 1fr;
+            align-items: center;
+         }
+         
+         .rss-image img {
+            aspect-ratio: 1 / 1; /* Taller image for medium screens */
+         }
+      }
+      @container reader (min-width: 769px) {
+         .rss-card {
+            grid-template-columns: 33% 1fr;
+            align-items: center;
+         }
+         
+         .rss-image img {
+            aspect-ratio: initial; /* Taller image for medium screens */
+         }
+      }
+      
+
+      /* Utility: Smooth scroll for the whole page */
+      html { scroll-behavior: smooth; }
+
+      /* Hide unused elements */
+      .source-badge, .read-link, .pub-date { display: none; }
+   </style>
+</head>
+<body>
+
+   <div id="rss-reader">
+      <p>Loading articles...</p>
+   </div>
+
+   <script>
+      if ('serviceWorker' in navigator) {
+         window.addEventListener('load', () => {
+            navigator.serviceWorker.register('service-worker.js')
+               .then(reg => console.log("SW Registered"))
+               .catch(err => console.log("SW Registration failed", err));
+         });
+      }
+   </script>
+   <script src="multi-rss.js"></script>
+
+</body>
+</html>
