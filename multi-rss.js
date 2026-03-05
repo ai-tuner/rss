@@ -8,10 +8,7 @@ const rssFeeds = [
     url: "https://timesofindia.indiatimes.com/rssfeedstopstories.cms",
     source: "ToI - Top Stories"
   },
- {
-url: "https://telanganatoday.com/feed",
-    source: "Telangana Today - Top Stories"
-  },
+ 
 {
 url: "https://www.oneindia.com/rss/feeds/news-india-fb.xml",
     source: "OneIndia - Top Stories"
