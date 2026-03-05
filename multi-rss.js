@@ -1,8 +1,8 @@
 
 const rssFeeds = [
   {
-    url: "https://timesofindia.indiatimes.com/rssfeeds/-2128816011.cms",
-    source: "ToI - Hyderabad"
+    url: "https://telanganatoday.com/feed",
+    source: "Telangana Today - Hyderabad"
   },
   {
     url: "https://timesofindia.indiatimes.com/rssfeedstopstories.cms",
