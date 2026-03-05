@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>RSS Reader</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script src="https://unpkg.com/@mozilla/readability/Readability.js"></script>
+
+<style>
+
+body{
+font-family: Arial, sans-serif;
+margin:0;
+background:#f4f6f8;
+}
+
+#rss-reader{
+max-width:900px;
+margin:auto;
+padding:10px;
+}
+
+.rss-card{
+background:white;
+border-radius:10px;
+margin-bottom:15px;
+padding:15px;
+box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.rss-card h2{
+font-size:18px;
+margin:5px 0;
+}
+
+.rss-image img{
+width:100%;
+border-radius:8px;
+}
+
+.read-link{
+display:inline-block;
+margin-top:10px;
+color:#0d6efd;
+text-decoration:none;
+font-weight:bold;
+}
+
+#article-viewer{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:white;
+overflow:auto;
+padding:20px;
+display:none;
+z-index:1000;
+}
+
+#article-viewer h1{
+font-size:26px;
+margin-bottom:20px;
+}
+
+.close-btn{
+position:fixed;
+top:10px;
+right:15px;
+font-size:20px;
+cursor:pointer;
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="rss-reader"></div>
+
+<div id="article-viewer">
+<span class="close-btn" onclick="closeArticle()">✖</span>
+<div id="article-content"></div>
+</div>
+
+<script>
+
+const rssFeeds = [
+
+{
+url:"https://www.thehindu.com/news/international/feeder/default.rss",
+source:"The Hindu - World"
+},
+
+{
+url:"https://www.livemint.com/rss/news",
+source:"LiveMint - News"
+},
+
+{
+url:"https://www.livemint.com/rss/science",
+source:"Mint - Science"
+},
+
+{
+url:"https://timesofindia.indiatimes.com/rssfeedstopstories.cms",
+source:"TOI - Top Stories"
+}
+
+];
+
+async function loadRSS(){
+
+try{
+
+const allItems=[];
+
+for(let feed of rssFeeds){
+
+const apiUrl=`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(feed.url)}`;
+
+const response=await fetch(apiUrl);
+
+const data=await response.json();
+
+if(data.items){
+
+data.items.forEach(item=>{
+item.sourceName=feed.source;
+});
+
+allItems.push(...data.items);
+
+}
+
+}
+
+allItems.sort((a,b)=>Date.parse(b.pubDate)-Date.parse(a.pubDate));
+
+renderArticles(allItems);
+
+}catch(err){
+
+document.getElementById("rss-reader").innerHTML="Error loading feeds";
+
+}
+
+}
+
+function renderArticles(items){
+
+const container=document.getElementById("rss-reader");
+
+container.innerHTML="";
+
+items.forEach(item=>{
+
+const card=document.createElement("div");
+
+card.className="rss-card";
+
+const imageHTML=getImage(item);
+
+card.innerHTML=`
+
+<div class="rss-image">
+${imageHTML}
+</div>
+
+<div class="rss-content">
+
+<b>${item.sourceName}</b>
+
+<h2>${item.title}</h2>
+
+<p>${cleanDescription(item.description)}</p>
+
+<a href="#" onclick="loadFullArticle('${item.link}')" class="read-link">
+Read Full Article
+</a>
+
+</div>
+
+`;
+
+container.appendChild(card);
+
+});
+
+}
+
+function getImage(item){
+
+if(item.enclosure && item.enclosure.link){
+
+return `<img src="${item.enclosure.link}">`;
+
+}
+
+if(item.description && item.description.includes("<img")){
+
+const match=item.description.match(/<img[^>]+>/);
+
+return match?match[0]:"";
+
+}
+
+return "";
+
+}
+
+function cleanDescription(description){
+
+return description?description.replace(/<img[^>]*>/g,""):"";
+
+}
+
+async function loadFullArticle(url){
+
+const viewer=document.getElementById("article-viewer");
+const content=document.getElementById("article-content");
+
+viewer.style.display="block";
+
+content.innerHTML="Loading article...";
+
+try{
+
+const proxy="https://api.allorigins.win/raw?url=";
+
+const response=await fetch(proxy+encodeURIComponent(url));
+
+const html=await response.text();
+
+const parser=new DOMParser();
+
+const doc=parser.parseFromString(html,"text/html");
+
+const article=new Readability(doc).parse();
+
+content.innerHTML=`
+
+<h1>${article.title}</h1>
+
+<div>${article.content}</div>
+
+`;
+
+}catch(err){
+
+content.innerHTML="Failed to load article.";
+
+}
+
+}
+
+function closeArticle(){
+
+document.getElementById("article-viewer").style.display="none";
+
+}
+
+loadRSS();
+
+</script>
+
+</body>
+</html>

@@ -45,7 +45,7 @@
          gap: 10px;
          padding: 8px;
          background-color: var(--bg-card);
-         border: 1px solid transparent;
+         border: 1px solid #402189;
          border-radius: 16px;
          transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
          text-decoration: none;
@@ -127,8 +127,10 @@
       /* Utility: Smooth scroll for the whole page */
       html { scroll-behavior: smooth; }
 
-      /* Hide unused elements .source-badge, */
-       .read-link, .pub-date { display: none; }
+      /* Hide unused elements */
+
+      .source-badge, .pub-date, .read-link  { display: none; }
+
    </style>
 </head>
 <body>
@@ -136,6 +138,8 @@
    <div id="rss-reader">
       <p>Loading articles...</p>
    </div>
+   <div id="article-viewer"></div>
+<script src="https://unpkg.com/@mozilla/readability/Readability.js"></script>
 
    <script>
       if ('serviceWorker' in navigator) {
