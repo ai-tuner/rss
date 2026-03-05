@@ -9,6 +9,14 @@ const rssFeeds = [
     source: "ToI - Top Stories"
   },
  
+url: "https://telanganatoday.com/feed",
+    source: "Telangana Today - Top Stories"
+  },
+
+url: "https://www.oneindia.com/rss/feeds/news-india-fb.xml",
+    source: "OneIndia - Top Stories"
+  },
+
   {
     url: "https://www.thehindu.com/news/national/feeder/default.rss",
     source: "The Hindu"
