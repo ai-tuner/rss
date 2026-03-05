@@ -17,7 +17,7 @@ url: "https://www.oneindia.com/rss/feeds/news-india-fb.xml",
   {
     url: "https://www.thehindu.com/news/national/feeder/default.rss",
     source: "The Hindu"
-  }
+  },
 ];
 
 async function loadRSS() {
